@@ -23,6 +23,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOrChangeOperation {
+    String[] expensesCategories = {"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
+    String[] incomeCategories = {"Зарплата", "Подарок", "% по вкладу", "Другое"};
     private int db_balance = 0;
     private FragmentHomeBinding binding;
     TextView balanceView;
@@ -48,22 +50,18 @@ public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOr
         balanceView.setText(balance);
 
         addButton.setOnClickListener(v -> {
-            String[] spinnerList = {"Зарплата", "Подарок", "% по вкладу", "Прочее"};
-            AddOperationDialog dialog = AddOperationDialog.newInstance(1, spinnerList);
+            AddOperationDialog dialog = AddOperationDialog.newInstance(1, incomeCategories);
             dialog.show(getChildFragmentManager(), "addIncome");
         });
         removeButton.setOnClickListener(v -> {
-            String[] spinnerList = {"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
-            AddOperationDialog dialog = AddOperationDialog.newInstance(0, spinnerList);
+            AddOperationDialog dialog = AddOperationDialog.newInstance(0, expensesCategories);
             dialog.show(getChildFragmentManager(), "addExpenses");
         });
 
         //Отображаем фрагменты с расходами и доходами
         PagerAdapter pagerAdapter = new PagerAdapter(this);
         int[] expensesImages = {R.drawable.products, R.drawable.sport, R.drawable.transport, R.drawable.education, R.drawable.family, R.drawable.food, R.drawable.other};
-        String[] expensesCategories = {"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
         int[] incomeImages = {R.drawable.salary, R.drawable.gift, R.drawable.percent, R.drawable.other};
-        String[] incomeCategories = {"Зарплата", "Подарок", "% по вкладу", "Прочее"};
         pagerAdapter.addFragment(CategoriesInfoFragment.newInstance(expensesImages, expensesCategories), "Расходы");
         pagerAdapter.addFragment(CategoriesInfoFragment.newInstance(incomeImages, incomeCategories), "Доходы");
         viewPager.setAdapter(pagerAdapter);

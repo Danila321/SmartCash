@@ -79,7 +79,7 @@ public class EditOperationDialog extends DialogFragment {
         editAmount.setText(String.valueOf(amount));
 
         String[] spinnerList1 = new String[]{"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
-        String[] spinnerList2 = new String[]{"Зарплата", "Подарок", "% по вкладу", "Прочее"};
+        String[] spinnerList2 = new String[]{"Зарплата", "Подарок", "% по вкладу", "Другое"};
         String[] spinnerList;
         if (Arrays.asList(spinnerList1).contains(category)) {
             spinnerList = spinnerList1;

@@ -118,7 +118,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
             reportText2.setText("Вы заработали на ней: ");
             reportProfitText.setText("Самая неприбыльная категория: ");
             reportProfitText2.setText("Вы заработали на ней: ");
-            categories = new String[]{"Зарплата", "Подарок", "% по вкладу", "Прочее"};
+            categories = new String[]{"Зарплата", "Подарок", "% по вкладу", "Другое"};
             categoriesText = categories;
         }
         chipYear.setChecked(true);
