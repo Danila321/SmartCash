@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Smart Cash</string>
+    <string name="nav_header_title">Smart Cash</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Главная</string>
+    <string name="menu_gallery">Графики и статистика</string>
+    <string name="menu_slideshow">Настройки</string>
+
+    <string name="title_activity_main">Smart Cash</string>
+</resources>
