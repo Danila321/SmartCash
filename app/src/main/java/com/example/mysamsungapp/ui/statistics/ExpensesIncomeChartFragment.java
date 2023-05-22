@@ -49,6 +49,7 @@ import java.util.Locale;
 
 public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDate {
     private static final String ARG_PARAM = "type";
+    private int type;
     BarChart barChart;
     PieChart pieChart;
     BarData data;
@@ -57,14 +58,13 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
     AlertDialog alertDialog;
     String expensiveCategory, profitableCategory;
     int profitableAmount, expensiveAmount;
-    boolean chartTypeFlag = true, dialogChartFlag;
+    boolean chartTypeFlag = true, dialogChartFlag = true;
     ArrayList<BarEntry> barEntries = new ArrayList<>();
     ArrayList<PieEntry> pieEntries = new ArrayList<>();
     String[] categories, categoriesText;
     String sortDate = "";
     String todayDate, dateOfStartWeek, dateOfStartMonth, dateOfStartYear;
     String todayText, WeekText, MonthText, YearText;
-    private int type;
 
     public ExpensesIncomeChartFragment() {
 
@@ -241,10 +241,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
                 }
                 getDataFromDB(categories);
                 updateChart();
-                reportTextSum.setText(String.valueOf(profitableCategory));
-                reportTextCategory.setText(String.valueOf(profitableAmount));
-                reportTextSumProfit.setText(String.valueOf(expensiveCategory));
-                reportTextCategoryProfit.setText(String.valueOf(expensiveAmount));
+                updateTexts();
             }
         });
 
@@ -442,7 +439,6 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
     }
 
     void updateChart() {
-        Log.i("TYPE", String.valueOf(chartTypeFlag));
         if (chartTypeFlag) {
             barChart.setVisibility(View.VISIBLE);
             pieChart.setVisibility(View.INVISIBLE);
