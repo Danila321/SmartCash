@@ -5,9 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -24,12 +24,23 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.mysamsungapp.DBHelper;
 import com.example.mysamsungapp.R;
+import com.example.mysamsungapp.ui.SpinnerAdapter;
+import com.example.mysamsungapp.ui.home.OperationsInfoActivity;
 
-public class AddCategoryDialog extends DialogFragment implements View.OnClickListener {
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+public class EditCategoryDialog extends DialogFragment implements View.OnClickListener {
     ConstraintLayout imagesContainer;
     private ImageButton selectedButton;
     private OnActionCategory onActionCategory;
-    private int type;
+    int id;
+    String name;
+    int image;
+    int type;
     int[] imagesExpenses;
     int[] imagesIncomes;
     int[] images;
@@ -40,9 +51,12 @@ public class AddCategoryDialog extends DialogFragment implements View.OnClickLis
         onActionCategory = (OnActionCategory) getParentFragment();
     }
 
-    public static AddCategoryDialog newInstance(int type, int[] imagesExpenses, int[] imagesIncomes) {
-        AddCategoryDialog dialog = new AddCategoryDialog();
+    public static EditCategoryDialog newInstance(int id, String name, int image, int type, int[] imagesExpenses, int[] imagesIncomes) {
+        EditCategoryDialog dialog = new EditCategoryDialog();
         Bundle args = new Bundle();
+        args.putInt("id", id);
+        args.putString("name", name);
+        args.putInt("image", image);
         args.putInt("type", type);
         args.putIntArray("imagesExpenses", imagesExpenses);
         args.putIntArray("imagesIncomes", imagesIncomes);
@@ -54,6 +68,9 @@ public class AddCategoryDialog extends DialogFragment implements View.OnClickLis
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            id = getArguments().getInt("id");
+            name = getArguments().getString("name");
+            image = getArguments().getInt("image");
             type = getArguments().getInt("type");
             imagesExpenses = getArguments().getIntArray("imagesExpenses");
             imagesIncomes = getArguments().getIntArray("imagesIncomes");
@@ -64,67 +81,56 @@ public class AddCategoryDialog extends DialogFragment implements View.OnClickLis
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        LayoutInflater inflater1 = requireActivity().getLayoutInflater();
-        @SuppressLint("InflateParams") View dialogView = inflater1.inflate(R.layout.categories_add_category, null);
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        @SuppressLint("InflateParams") View dialogView = inflater.inflate(R.layout.categories_add_category, null);
         builder.setView(dialogView);
 
+        TextView editTitle = dialogView.findViewById(R.id.dialog_title);
         RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroup);
-        RadioButton expensesRadioButton = dialogView.findViewById(R.id.radioButton2);
-        RadioButton incomeRadioButton = dialogView.findViewById(R.id.radioButton);
-        TextView typeTextView = dialogView.findViewById(R.id.TypeTextView);
         TextView typeTextViewData = dialogView.findViewById(R.id.TypeTextViewData);
         EditText editName = dialogView.findViewById(R.id.dialog_description);
         Button OkButton = dialogView.findViewById(R.id.dialog_ok_button);
         Button CancelButton = dialogView.findViewById(R.id.dialog_cancel_button);
         imagesContainer = dialogView.findViewById(R.id.imagesCategoryContainer);
 
-        typeTextView.setVisibility(View.INVISIBLE);
-        typeTextViewData.setVisibility(View.INVISIBLE);
+        radioGroup.setVisibility(View.INVISIBLE);
 
         if (type == 1) {
-            expensesRadioButton.setChecked(true);
+            typeTextViewData.setText("Расходы");
             images = imagesExpenses;
         } else {
-            incomeRadioButton.setChecked(true);
+            typeTextViewData.setText("Доходы");
             images = imagesIncomes;
         }
         updateImages();
 
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radioButton2) {
-                images = imagesExpenses;
-            } else {
-                images = imagesIncomes;
-            }
-            updateImages();
-        });
+        editTitle.setText("Изменение категории");
+        editName.setText(name);
 
         OkButton.setOnClickListener(v2 -> {
             if (editName.length() == 0) {
                 editName.setError("Введите название");
             } else {
-                int checkedButton = radioGroup.indexOfChild(radioGroup.findViewById(radioGroup.getCheckedRadioButtonId())) + 1;
                 SQLiteDatabase db = new DBHelper(getContext()).getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("name", editName.getText().toString());
-                values.put("type", checkedButton);
+                values.put("type", type);
                 values.put("image", images[Integer.parseInt(selectedButton.getTag().toString())]);
-                db.insert("categories", null, values);
+                db.update("categories", values, "id =?", new String[]{String.valueOf(id)});
                 db.close();
                 dismiss();
-                onActionCategory.onAdd();
+                onActionCategory.onChange();
             }
         });
 
-        CancelButton.setOnClickListener(v1 -> dismiss());
+        CancelButton.setOnClickListener(v -> dismiss());
 
         return builder.create();
     }
 
     void updateImages() {
-        boolean flag = true;
         for (int i = 0; i < imagesContainer.getChildCount(); i++) {
             ImageButton button = (ImageButton) imagesContainer.getChildAt(i);
             if (i < images.length) {
@@ -132,10 +138,9 @@ public class AddCategoryDialog extends DialogFragment implements View.OnClickLis
                 button.setOnClickListener(this);
                 button.setImageResource(images[i]);
                 button.setTag(i);
-                if (flag) {
+                if (images[i] == image) {
                     selectedButton = button;
                     selectedButton.setBackgroundResource(R.drawable.custom_category_item_selected);
-                    flag = false;
                 } else {
                     button.setBackgroundResource(R.color.transparent);
                 }

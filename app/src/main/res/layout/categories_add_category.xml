@@ -60,42 +60,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
-    <Button
-        android:id="@+id/dialog_cancel_button"
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-light"
-        android:padding="8dp"
-        android:text="Отмена"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/scrollView2"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
-
-    <Button
-        android:id="@+id/dialog_ok_button"
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
-        android:backgroundTint="@android:color/holo_blue_dark"
-        android:fontFamily="sans-serif-light"
-        android:padding="8dp"
-        android:text="Добавить"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/scrollView2"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+        android:text="Изображение"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_description" />
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="214dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="10dp"
@@ -191,6 +172,19 @@
                 android:id="@+id/imageButton9"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_marginStart="100dp"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="@+id/imageButton7"
+                app:layout_constraintStart_toEndOf="@+id/imageButton7"
+                app:layout_constraintTop_toTopOf="@+id/imageButton7"
+                app:srcCompat="@drawable/metro" />
+
+            <ImageButton
+                android:id="@+id/imageButton10"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="8dp"
                 android:background="@android:color/transparent"
@@ -201,31 +195,113 @@
                 app:srcCompat="@drawable/gas_station" />
 
             <ImageButton
-                android:id="@+id/imageButton10"
+                android:id="@+id/imageButton11"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="14dp"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageButton7"
+                app:srcCompat="@drawable/ship" />
+
+            <ImageButton
+                android:id="@+id/imageButton12"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="@+id/imageButton11"
+                app:layout_constraintStart_toEndOf="@+id/imageButton11"
+                app:layout_constraintTop_toTopOf="@+id/imageButton11"
+                app:srcCompat="@drawable/airplane" />
+
+            <ImageButton
+                android:id="@+id/imageButton13"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="100dp"
                 android:background="@android:color/transparent"
                 android:padding="5dp"
                 android:scaleType="fitCenter"
-                app:layout_constraintBottom_toBottomOf="@+id/imageButton7"
-                app:layout_constraintStart_toEndOf="@+id/imageButton7"
-                app:layout_constraintTop_toTopOf="@+id/imageButton7"
-                app:srcCompat="@drawable/metro" />
+                app:layout_constraintBottom_toBottomOf="@+id/imageButton11"
+                app:layout_constraintStart_toEndOf="@+id/imageButton11"
+                app:layout_constraintTop_toTopOf="@+id/imageButton11"
+                app:srcCompat="@drawable/airplane" />
+
+            <ImageButton
+                android:id="@+id/imageButton14"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="8dp"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageButton10"
+                app:srcCompat="@drawable/airplane" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
+    <Button
+        android:id="@+id/dialog_cancel_button"
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:fontFamily="sans-serif-light"
+        android:padding="8dp"
+        android:text="Отмена"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/scrollView2"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+    <Button
+        android:id="@+id/dialog_ok_button"
+        android:layout_width="110dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:fontFamily="sans-serif-light"
+        android:padding="8dp"
+        android:text="Добавить"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView2"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/TypeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="28dp"
         android:fontFamily="sans-serif-light"
-        android:text="Изображение"
+        android:text="Тип"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_description" />
+        app:layout_constraintBottom_toBottomOf="@+id/radioGroup"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/TypeTextViewData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="TextView"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@+id/TypeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/TypeTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

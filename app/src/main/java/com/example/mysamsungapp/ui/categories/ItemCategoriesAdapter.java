@@ -2,6 +2,7 @@ package com.example.mysamsungapp.ui.categories;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,17 @@ import java.util.ArrayList;
 
 public class ItemCategoriesAdapter extends ArrayAdapter<ItemCategories> {
     FragmentManager fm;
-    public ItemCategoriesAdapter(@NonNull Context context, ArrayList<ItemCategories> items, FragmentManager fm) {
+    int type;
+    int[] imagesExpenses;
+    int[] imagesIncomes;
+
+    public ItemCategoriesAdapter(@NonNull Context context, ArrayList<ItemCategories> items, FragmentManager fm, int type, int[] imagesExpenses, int[] imagesIncomes) {
         super(context, R.layout.categories_custom_item, items);
         this.fm = fm;
+        this.type = type;
+        Log.i("TYPE", String.valueOf(type));
+        this.imagesExpenses = imagesExpenses;
+        this.imagesIncomes = imagesIncomes;
     }
 
     @SuppressLint("InflateParams")
@@ -37,6 +46,8 @@ public class ItemCategoriesAdapter extends ArrayAdapter<ItemCategories> {
 
         TextView textViewCategory1 = convertView.findViewById(R.id.textViewCategory1);
         TextView textViewCategory2 = convertView.findViewById(R.id.textViewCategory2);
+        ImageButton edit1 = convertView.findViewById(R.id.categoryEdit1);
+        ImageButton edit2 = convertView.findViewById(R.id.categoryEdit2);
         ImageButton delete1 = convertView.findViewById(R.id.categoryDelete1);
         ImageButton delete2 = convertView.findViewById(R.id.categoryDelete2);
         ImageView imageViewCategory1 = convertView.findViewById(R.id.imageViewCategory1);
@@ -44,6 +55,16 @@ public class ItemCategoriesAdapter extends ArrayAdapter<ItemCategories> {
         ConstraintLayout item2 = convertView.findViewById(R.id.constraintLayout4);
 
         ItemCategories item = getItem(position);
+
+        edit1.setOnClickListener(v -> {
+            EditCategoryDialog dialog = EditCategoryDialog.newInstance(item.id, item.name, item.image, type, imagesExpenses, imagesIncomes);
+            dialog.show(fm, "editItem");
+        });
+
+        edit2.setOnClickListener(v -> {
+            EditCategoryDialog dialog = EditCategoryDialog.newInstance(item.id2, item.name2, item.image2, type, imagesExpenses, imagesIncomes);
+            dialog.show(fm, "editItem");
+        });
 
         delete1.setOnClickListener(v -> {
             DeleteCategoryDialog dialog = DeleteCategoryDialog.newInstance(item.id);

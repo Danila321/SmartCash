@@ -27,9 +27,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 public class ActionCategoriesFragment extends Fragment implements OnActionCategory {
-    private static final String ARG_PARAM = "type";
     private int type;
-    AlertDialog alertDialog;
     ArrayList<ItemCategories> items = new ArrayList<>();
     ItemCategoriesAdapter adapter;
     ListView listView;
@@ -41,7 +39,7 @@ public class ActionCategoriesFragment extends Fragment implements OnActionCatego
     public static ActionCategoriesFragment newInstance(int type) {
         ActionCategoriesFragment fragment = new ActionCategoriesFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM, type);
+        args.putInt("type", type);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,7 +48,7 @@ public class ActionCategoriesFragment extends Fragment implements OnActionCatego
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            type = getArguments().getInt(ARG_PARAM);
+            type = getArguments().getInt("type");
         }
     }
 
@@ -64,11 +62,17 @@ public class ActionCategoriesFragment extends Fragment implements OnActionCatego
 
         getCategories();
 
-        adapter = new ItemCategoriesAdapter(requireActivity(), items, getChildFragmentManager());
+        //Изображения для категорий
+        int[] imagesExpenses = new int[]{R.drawable.products, R.drawable.food, R.drawable.education, R.drawable.family, R.drawable.sport, R.drawable.airplane,
+                R.drawable.metro, R.drawable.gas_station, R.drawable.ship, R.drawable.wine, R.drawable.other};
+        int[] imagesIncomes = new int[]{R.drawable.gift, R.drawable.salary, R.drawable.percent, R.drawable.other};
+
+        //Формируем список всех категорий
+        adapter = new ItemCategoriesAdapter(requireActivity(), items, getChildFragmentManager(), type, imagesExpenses, imagesIncomes);
         listView.setAdapter(adapter);
 
         buttonAdd.setOnClickListener(v -> {
-            AddCategoryDialog addCategoryDialog = AddCategoryDialog.newInstance(type);
+            AddCategoryDialog addCategoryDialog = AddCategoryDialog.newInstance(type, imagesExpenses, imagesIncomes);
             addCategoryDialog.show(getChildFragmentManager(), "addCategory");
         });
 
@@ -133,5 +137,13 @@ public class ActionCategoriesFragment extends Fragment implements OnActionCatego
     public void onAdd() {
         getCategories();
         adapter.notifyDataSetChanged();
+        Snackbar.make(listView, "Категория успешно удалена", Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onChange() {
+        getCategories();
+        adapter.notifyDataSetChanged();
+        Snackbar.make(listView, "Категория успешно отредактирована", Snackbar.LENGTH_LONG).show();
     }
 }

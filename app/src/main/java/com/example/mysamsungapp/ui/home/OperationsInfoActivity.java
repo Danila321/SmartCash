@@ -138,6 +138,7 @@ public class OperationsInfoActivity extends AppCompatActivity {
         values.put("description", description);
         values.put("category_id", categoryId);
         db.update("operations", values, "id =?", new String[]{String.valueOf(id)});
+        db.close();
         Snackbar.make(studentList, "Операция успешно отредактирована!", Snackbar.LENGTH_LONG).show();
         //Обновляем список
         getDataFromDB();
