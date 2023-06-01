@@ -3,7 +3,6 @@ package com.example.mysamsungapp.ui.settings;
 import android.app.AlertDialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,6 @@ import com.example.mysamsungapp.DBHelper;
 import com.example.mysamsungapp.R;
 import com.example.mysamsungapp.databinding.FragmentSettingsBinding;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.util.Objects;
 
 public class SettingsFragment extends Fragment {
     private FragmentSettingsBinding binding;
@@ -43,7 +40,7 @@ public class SettingsFragment extends Fragment {
         infoDelete.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Удаление данных");
-            builder.setMessage("Все ваши данные в приложении, включая все операции и настройки будут безвозвратно удалены с вашего устройства");
+            builder.setMessage("Все ваши данные в приложении, включая все операции и категории будут безвозвратно удалены с вашего устройства");
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         });
@@ -59,7 +56,9 @@ public class SettingsFragment extends Fragment {
 
     public void onDelete() {
         SQLiteDatabase db = new DBHelper(getContext()).getWritableDatabase();
-        db.delete("operations", null, null);
+        db.delete("operations", "1", null);
+        db.delete("categories", "1", null);
         Snackbar.make(requireView(), "Все данные успешно удалены", Snackbar.LENGTH_SHORT).show();
+        db.close();
     }
 }

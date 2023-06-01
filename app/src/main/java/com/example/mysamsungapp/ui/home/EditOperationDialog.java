@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.mysamsungapp.DBHelper;
 import com.example.mysamsungapp.R;
+import com.example.mysamsungapp.ui.SpinnerAdapter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +33,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class EditOperationDialog extends DialogFragment {
+    ArrayList<String> expensesCategories = new ArrayList<>();
+    ArrayList<String> incomeCategories = new ArrayList<>();
+    ArrayList<Integer> expensesImages = new ArrayList<>();
+    ArrayList<Integer> incomeImages = new ArrayList<>();
     private int id, amount;
     String category, date, description;
 
@@ -58,6 +64,7 @@ public class EditOperationDialog extends DialogFragment {
         }
     }
 
+    @SuppressLint("Range")
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -78,17 +85,38 @@ public class EditOperationDialog extends DialogFragment {
         editTitle.setText("Изменение операции");
         editAmount.setText(String.valueOf(amount));
 
-        String[] spinnerList1 = new String[]{"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
-        String[] spinnerList2 = new String[]{"Зарплата", "Подарок", "% по вкладу", "Другое"};
-        String[] spinnerList;
-        if (Arrays.asList(spinnerList1).contains(category)) {
-            spinnerList = spinnerList1;
-        } else {
-            spinnerList = spinnerList2;
+        //Получаем категории
+        expensesCategories.clear();
+        expensesImages.clear();
+        incomeCategories.clear();
+        incomeImages.clear();
+        SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
+        String sql = "SELECT name, image, type FROM categories";
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getInt(cursor.getColumnIndex("type")) == 1) {
+                    expensesCategories.add(cursor.getString(cursor.getColumnIndex("name")));
+                    expensesImages.add(cursor.getInt(cursor.getColumnIndex("image")));
+                } else {
+                    incomeCategories.add(cursor.getString(cursor.getColumnIndex("name")));
+                    incomeImages.add(cursor.getInt(cursor.getColumnIndex("image")));
+                }
+            } while (cursor.moveToNext());
         }
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, spinnerList);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        editCategory.setAdapter(categoryAdapter);
+        cursor.close();
+        db.close();
+        ArrayList<String> spinnerList;
+        ArrayList<Integer> spinnerListImages;
+        if (expensesCategories.contains(category)) {
+            spinnerList = expensesCategories;
+            spinnerListImages = expensesImages;
+        } else {
+            spinnerList = incomeCategories;
+            spinnerListImages = incomeImages;
+        }
+        SpinnerAdapter adapter = new SpinnerAdapter(getContext(), spinnerListImages, spinnerList, true);
+        editCategory.setAdapter(adapter);
         int position = 0;
         for (String string : spinnerList) {
             if (string.equals(category)) {
@@ -117,7 +145,7 @@ public class EditOperationDialog extends DialogFragment {
         OkButton.setText("Изменить");
         OkButton.setOnClickListener(v -> {
             String amount = editAmount.getText().toString();
-            String category = editCategory.getSelectedItem().toString();
+            String category = spinnerList.get(editCategory.getSelectedItemPosition());
             String description = editDescription.getText().toString();
 
             int day = editDate.getDayOfMonth();

@@ -1,8 +1,10 @@
 package com.example.mysamsungapp.ui.home;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +24,21 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOrChangeOperation {
-    String[] expensesCategories = {"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
-    String[] incomeCategories = {"Зарплата", "Подарок", "% по вкладу", "Другое"};
-    private int db_balance = 0;
+    ArrayList<String> expensesCategories = new ArrayList<>();
+    ArrayList<String> incomeCategories = new ArrayList<>();
+    ArrayList<Integer> expensesImages = new ArrayList<>();
+    ArrayList<Integer> incomeImages = new ArrayList<>();
     private FragmentHomeBinding binding;
     TextView balanceView;
+
+    /*String[] expensesCategories = {"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
+    String[] incomeCategories = {"Зарплата", "Подарок", "% по вкладу", "Другое"};
+    int[] expensesImages = {R.drawable.products, R.drawable.sport, R.drawable.transport, R.drawable.education, R.drawable.family, R.drawable.food, R.drawable.other};
+    int[] incomeImages = {R.drawable.salary, R.drawable.gift, R.drawable.percent, R.drawable.other};*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,24 +55,23 @@ public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOr
         TabLayout tabLayout = root.findViewById(R.id.tab_layout);
         ViewPager2 viewPager = root.findViewById(R.id.view_pager);
 
-        //Получаем баланс из БД и отображаем
+        //Получаем баланс из БД и отображаем его
         getBalance();
-        String balance = db_balance + " руб.";
-        balanceView.setText(balance);
+
+        //Получаем все категории
+        getCategories();
 
         addButton.setOnClickListener(v -> {
-            AddOperationDialog dialog = AddOperationDialog.newInstance(1, incomeCategories);
+            AddOperationDialog dialog = AddOperationDialog.newInstance(1, incomeCategories, incomeImages);
             dialog.show(getChildFragmentManager(), "addIncome");
         });
         removeButton.setOnClickListener(v -> {
-            AddOperationDialog dialog = AddOperationDialog.newInstance(0, expensesCategories);
+            AddOperationDialog dialog = AddOperationDialog.newInstance(0, expensesCategories, expensesImages);
             dialog.show(getChildFragmentManager(), "addExpenses");
         });
 
         //Отображаем фрагменты с расходами и доходами
         PagerAdapter pagerAdapter = new PagerAdapter(this);
-        int[] expensesImages = {R.drawable.products, R.drawable.sport, R.drawable.transport, R.drawable.education, R.drawable.family, R.drawable.food, R.drawable.other};
-        int[] incomeImages = {R.drawable.salary, R.drawable.gift, R.drawable.percent, R.drawable.other};
         pagerAdapter.addFragment(CategoriesInfoFragment.newInstance(expensesImages, expensesCategories), "Расходы");
         pagerAdapter.addFragment(CategoriesInfoFragment.newInstance(incomeImages, incomeCategories), "Доходы");
         viewPager.setAdapter(pagerAdapter);
@@ -72,17 +82,44 @@ public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOr
         return root;
     }
 
+    @SuppressLint("Range")
     public void getBalance() {
         SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
         String sql = "SELECT amount, type FROM operations";
         Cursor cursor = db.rawQuery(sql, null);
-        db_balance = 0;
+        int db_balance = 0;
         if (cursor.moveToFirst()) {
             do {
-                if (cursor.getInt(cursor.getColumnIndexOrThrow("type")) == 1) {
-                    db_balance += cursor.getInt(cursor.getColumnIndexOrThrow("amount"));
+                if (cursor.getInt(cursor.getColumnIndex("type")) == 1) {
+                    db_balance += cursor.getInt(cursor.getColumnIndex("amount"));
                 } else {
-                    db_balance -= cursor.getInt(cursor.getColumnIndexOrThrow("amount"));
+                    db_balance -= cursor.getInt(cursor.getColumnIndex("amount"));
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        String balance = db_balance + " руб.";
+        balanceView.setText(balance);
+    }
+
+    @SuppressLint("Range")
+    public void getCategories() {
+        expensesCategories.clear();
+        expensesImages.clear();
+        incomeCategories.clear();
+        incomeImages.clear();
+        SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
+        String sql = "SELECT name, image, type FROM categories";
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getInt(cursor.getColumnIndex("type")) == 1) {
+                    expensesCategories.add(cursor.getString(cursor.getColumnIndex("name")));
+                    expensesImages.add(cursor.getInt(cursor.getColumnIndex("image")));
+                } else {
+                    incomeCategories.add(cursor.getString(cursor.getColumnIndex("name")));
+                    incomeImages.add(cursor.getInt(cursor.getColumnIndex("image")));
                 }
             } while (cursor.moveToNext());
         }
@@ -100,14 +137,10 @@ public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOr
     public void onAddOperation() {
         Snackbar.make(requireView(), "Операция успешно добавлена!", Snackbar.LENGTH_LONG).show();
         getBalance();
-        String balance = db_balance + " руб.";
-        balanceView.setText(balance);
     }
 
     @Override
     public void onDeleteOrChangeOperation() {
         getBalance();
-        String balance = db_balance + " руб.";
-        balanceView.setText(balance);
     }
 }

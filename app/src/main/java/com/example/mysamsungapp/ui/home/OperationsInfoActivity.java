@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,19 +21,21 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.mysamsungapp.DBHelper;
 import com.example.mysamsungapp.R;
+import com.example.mysamsungapp.ui.SpinnerAdapter;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class OperationsInfoActivity extends AppCompatActivity {
+    TextView infoText;
+    Spinner sortType;
     String sql = "";
     ListView studentList;
     String categoryName;
     int categoryImage;
     ArrayList<ItemOperation> items = new ArrayList<>();
     ItemOperationAdapter listAdapter;
-    String[] spinnerList = {"по сумме", "по дате"};
     boolean isChanged = false;
 
     @SuppressLint("Range")
@@ -42,8 +45,8 @@ public class OperationsInfoActivity extends AppCompatActivity {
         setContentView(R.layout.home_operations_activity);
 
         Toolbar toolbar = findViewById(R.id.toolBar);
-        TextView infoText = findViewById(R.id.infoText);
-        Spinner sortType = findViewById(R.id.sortType);
+        infoText = findViewById(R.id.infoText);
+        sortType = findViewById(R.id.sortType);
         studentList = findViewById(R.id.operationsList);
 
         String sortDate = getIntent().getStringExtra("sortPeriod");
@@ -57,42 +60,30 @@ public class OperationsInfoActivity extends AppCompatActivity {
         listAdapter = new ItemOperationAdapter(this, items);
         studentList.setAdapter(listAdapter);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayList<Integer> images = new ArrayList<>();
+        images.add(R.drawable.cash);
+        images.add(R.drawable.calendar);
+        ArrayList<String> names = new ArrayList<>();
+        names.add("по сумме");
+        names.add("по дате");
+        SpinnerAdapter adapter = new SpinnerAdapter(this, images, names, false);
         sortType.setAdapter(adapter);
         sortType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //Формируем запрос в зависимости от выбранного типа сортировки
                 switch (position) {
                     case 0:
-                        sql = "SELECT id, amount, date, description FROM operations WHERE category = '" + categoryName + "' AND date " + sortDate + " ORDER BY amount DESC";
+                        sql = "SELECT operations.id, amount, date, description FROM operations JOIN categories ON operations.category_id = categories.id " +
+                                "WHERE categories.name = '" + categoryName + "' AND date " + sortDate + " ORDER BY amount DESC";
                         break;
                     case 1:
-                        sql = "SELECT id, amount, date, description FROM operations WHERE category = '" + categoryName + "' AND date " + sortDate + " ORDER BY date DESC";
+                        sql = "SELECT operations.id, amount, date, description FROM operations JOIN categories ON operations.category_id = categories.id " +
+                                "WHERE categories.name = '" + categoryName + "' AND date " + sortDate + " ORDER BY date DESC";
                         break;
                 }
-                SQLiteDatabase db = new DBHelper(getApplicationContext()).getReadableDatabase();
-                Cursor cursor = db.rawQuery(sql, null);
-                if (cursor.moveToNext()) {
-                    items.clear();
-                    do {
-                        items.add(new ItemOperation(
-                                cursor.getInt(cursor.getColumnIndex("id")),
-                                categoryImage,
-                                categoryName,
-                                cursor.getString(cursor.getColumnIndex("description")),
-                                cursor.getString(cursor.getColumnIndex("date")),
-                                cursor.getInt(cursor.getColumnIndex("amount"))
-                        ));
-                    } while (cursor.moveToNext());
-                    listAdapter.notifyDataSetChanged();
-                } else {
-                    sortType.setOnItemSelectedListener(null);
-                    sortType.setVisibility(View.GONE);
-                    infoText.setText("Операций по данной категории пока нет");
-                }
-                cursor.close();
-                db.close();
+                //Делаем запрос к БД и обновляем список
+                getDataFromDB();
             }
 
             @Override
@@ -103,18 +94,11 @@ public class OperationsInfoActivity extends AppCompatActivity {
     }
 
     @SuppressLint("Range")
-    public void onChangeItem(int id, int amount, String category, String date, String description) {
-        SQLiteDatabase db = new DBHelper(getApplicationContext()).getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("amount", amount);
-        values.put("category", category);
-        values.put("date", date);
-        values.put("description", description);
-        db.update("operations", values, "id =?", new String[]{String.valueOf(id)});
-        db = new DBHelper(getApplicationContext()).getReadableDatabase();
-        @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, null);
+    public void getDataFromDB() {
+        SQLiteDatabase db = new DBHelper(getApplicationContext()).getReadableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        items.clear();
         if (cursor.moveToNext()) {
-            items.clear();
             do {
                 items.add(new ItemOperation(
                         cursor.getInt(cursor.getColumnIndex("id")),
@@ -125,10 +109,38 @@ public class OperationsInfoActivity extends AppCompatActivity {
                         cursor.getInt(cursor.getColumnIndex("amount"))
                 ));
             } while (cursor.moveToNext());
+        } else {
+            sortType.setOnItemSelectedListener(null);
+            sortType.setVisibility(View.GONE);
+            infoText.setText("Операций по данной категории пока нет");
         }
-        db.close();
-        Snackbar.make(studentList, "Операция успешно отредактирована!", Snackbar.LENGTH_LONG).show();
         listAdapter.notifyDataSetChanged();
+        cursor.close();
+        db.close();
+    }
+
+    @SuppressLint("Range")
+    public void onChangeItem(int id, int amount, String category, String date, String description) {
+        //Получаем category_id для обновления операции
+        SQLiteDatabase dbCategory = new DBHelper(getApplicationContext()).getReadableDatabase();
+        Cursor cursorCategory = dbCategory.rawQuery("SELECT id FROM categories WHERE name = '" + category + "'", null);
+        int categoryId = 0;
+        if (cursorCategory.moveToFirst()) { // Проверяем, есть ли строки в курсоре
+            categoryId = cursorCategory.getInt(cursorCategory.getColumnIndex("id")); // Получаем category_id
+        }
+        cursorCategory.close();
+        dbCategory.close();
+        //Обновляем операцию в БД
+        SQLiteDatabase db = new DBHelper(getApplicationContext()).getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("amount", amount);
+        values.put("date", date);
+        values.put("description", description);
+        values.put("category_id", categoryId);
+        db.update("operations", values, "id =?", new String[]{String.valueOf(id)});
+        Snackbar.make(studentList, "Операция успешно отредактирована!", Snackbar.LENGTH_LONG).show();
+        //Обновляем список
+        getDataFromDB();
         isChanged = true;
     }
 

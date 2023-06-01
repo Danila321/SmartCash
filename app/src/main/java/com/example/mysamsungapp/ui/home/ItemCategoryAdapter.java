@@ -18,7 +18,7 @@ public class ItemCategoryAdapter extends ArrayAdapter<ItemCategory> {
         super(context, R.layout.home_category_item, arr);
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "InflateParams"})
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {

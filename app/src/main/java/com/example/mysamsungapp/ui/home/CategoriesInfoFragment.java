@@ -47,8 +47,8 @@ public class CategoriesInfoFragment extends Fragment implements OnChangeDate {
     String sortDate = "";
     String todayDate, dateOfStartWeek, dateOfStartMonth, dateOfStartYear;
     String todayText, WeekText, MonthText, YearText;
-    private int[] images;
-    private String[] categories;
+    private ArrayList<String> categories;
+    private ArrayList<Integer> images;
     private OnDeleteOrChangeOperation onDeleteOrChangeOperation;
 
     @Override
@@ -61,11 +61,11 @@ public class CategoriesInfoFragment extends Fragment implements OnChangeDate {
 
     }
 
-    public static CategoriesInfoFragment newInstance(int[] images, String[] categories) {
+    public static CategoriesInfoFragment newInstance(ArrayList<Integer> images, ArrayList<String> categories) {
         CategoriesInfoFragment fragment = new CategoriesInfoFragment();
         Bundle args = new Bundle();
-        args.putIntArray(ARG_IMAGES, images);
-        args.putStringArray(ARG_CATEGORIES, categories);
+        args.putIntegerArrayList(ARG_IMAGES, images);
+        args.putStringArrayList(ARG_CATEGORIES, categories);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,8 +74,8 @@ public class CategoriesInfoFragment extends Fragment implements OnChangeDate {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            images = getArguments().getIntArray(ARG_IMAGES);
-            categories = getArguments().getStringArray(ARG_CATEGORIES);
+            images = getArguments().getIntegerArrayList(ARG_IMAGES);
+            categories = getArguments().getStringArrayList(ARG_CATEGORIES);
         }
     }
 
@@ -168,8 +168,8 @@ public class CategoriesInfoFragment extends Fragment implements OnChangeDate {
         lv.setOnItemClickListener((parent, view1, position, id) -> {
             Intent intent = new Intent(getActivity(), OperationsInfoActivity.class);
             intent.putExtra("sortPeriod", sortDate);
-            intent.putExtra("image", images[position]);
-            intent.putExtra("category", categories[position]);
+            intent.putExtra("image", images.get(position));
+            intent.putExtra("category", categories.get(position));
             activityResultLauncher.launch(intent);
         });
 
@@ -217,11 +217,11 @@ public class CategoriesInfoFragment extends Fragment implements OnChangeDate {
         items.clear();
         totalSum = 0;
         SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
-        for (int i = 0; i < images.length; i++) {
+        for (int i = 0; i < images.size(); i++) {
             ItemCategory item = new ItemCategory();
-            item.image = images[i];
-            item.category = categories[i];
-            String sql = "SELECT amount FROM operations WHERE category = '" + item.category + "' AND date " + sortDate;
+            item.image = images.get(i);
+            item.category = categories.get(i);
+            String sql = "SELECT amount FROM operations JOIN categories ON operations.category_id = categories.id WHERE categories.name = '" + item.category + "' AND date " + sortDate;
             Cursor cursor = db.rawQuery(sql, null);
             if (cursor.moveToFirst()) {
                 do {
