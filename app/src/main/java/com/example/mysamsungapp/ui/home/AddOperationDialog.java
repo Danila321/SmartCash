@@ -26,6 +26,7 @@ import com.example.mysamsungapp.R;
 import com.example.mysamsungapp.ui.SpinnerAdapter;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class AddOperationDialog extends DialogFragment {
     private int type;
@@ -85,6 +86,8 @@ public class AddOperationDialog extends DialogFragment {
 
         SpinnerAdapter adapter = new SpinnerAdapter(getContext(), categoriesImage, categoriesName, true);
         editCategory.setAdapter(adapter);
+
+        editDate.setMaxDate(new Date().getTime());
 
         OkButton.setOnClickListener(v -> {
             String amount = editAmount.getText().toString();

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.mysamsungapp.DBHelper;
 import com.example.mysamsungapp.R;
+
+import java.util.ArrayList;
 
 public class AddCategoryDialog extends DialogFragment implements View.OnClickListener {
     ConstraintLayout imagesContainer;
@@ -102,10 +105,26 @@ public class AddCategoryDialog extends DialogFragment implements View.OnClickLis
         });
 
         OkButton.setOnClickListener(v2 -> {
-            if (editName.length() == 0) {
-                editName.setError("Введите название");
+            int checkedButton = radioGroup.indexOfChild(radioGroup.findViewById(radioGroup.getCheckedRadioButtonId())) + 1;
+            SQLiteDatabase dbCheck = new DBHelper(getContext()).getReadableDatabase();
+            String sql = "SELECT name FROM categories WHERE type = '" + checkedButton + "'";
+            Cursor cursor = dbCheck.rawQuery(sql, null);
+            ArrayList<String> names = new ArrayList<>();
+            if (cursor.moveToNext()) {
+                do {
+                    names.add(cursor.getString(cursor.getColumnIndex("name")));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            dbCheck.close();
+            if (editName.length() == 0 || names.contains(editName.getText().toString())) {
+                if (editName.length() == 0) {
+                    editName.setError("Введите название");
+                }
+                if (names.contains(editName.getText().toString())) {
+                    editName.setError("Такая категория уже есть");
+                }
             } else {
-                int checkedButton = radioGroup.indexOfChild(radioGroup.findViewById(radioGroup.getCheckedRadioButtonId())) + 1;
                 SQLiteDatabase db = new DBHelper(getContext()).getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("name", editName.getText().toString());

@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDate {
-    private static final String ARG_PARAM = "type";
     private int type;
     BarChart barChart;
     PieChart pieChart;
@@ -61,7 +60,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
     boolean chartTypeFlag = true, dialogChartFlag = true;
     ArrayList<BarEntry> barEntries = new ArrayList<>();
     ArrayList<PieEntry> pieEntries = new ArrayList<>();
-    String[] categories, categoriesText;
+    ArrayList<String> categories = new ArrayList<>();
     String sortDate = "";
     String todayDate, dateOfStartWeek, dateOfStartMonth, dateOfStartYear;
     String todayText, WeekText, MonthText, YearText;
@@ -73,7 +72,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
     public static ExpensesIncomeChartFragment newInstance(int param1) {
         ExpensesIncomeChartFragment fragment = new ExpensesIncomeChartFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM, param1);
+        args.putInt("type", param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,7 +81,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            type = getArguments().getInt(ARG_PARAM);
+            type = getArguments().getInt("type");
         }
     }
 
@@ -111,16 +110,13 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
             reportText2.setText("Вы потратили на неё: ");
             reportProfitText.setText("Самая дешевая категория: ");
             reportProfitText2.setText("Вы потратили на неё: ");
-            categories = new String[]{"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
-            categoriesText = new String[]{"Продукты", "Спорт", "Трансп.", "Образов.", "Семья", "Еда", "Прочее"};
         } else {
             reportText.setText("Самая прибыльная категория: ");
             reportText2.setText("Вы заработали на ней: ");
             reportProfitText.setText("Самая неприбыльная категория: ");
             reportProfitText2.setText("Вы заработали на ней: ");
-            categories = new String[]{"Зарплата", "Подарок", "% по вкладу", "Другое"};
-            categoriesText = categories;
         }
+        getCategories();
         chipYear.setChecked(true);
         period.setPaintFlags(period.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         chartType.setPaintFlags(period.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -249,7 +245,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
     }
 
     @SuppressLint("Range")
-    void getDataFromDB(String[] array) {
+    void getDataFromDB(ArrayList<String> array) {
         int[] chartColorsArray = new int[]{Color.rgb(64, 89, 128), Color.rgb(149, 165, 124), Color.rgb(217, 184, 162),
                 Color.rgb(191, 134, 134), Color.rgb(179, 48, 80), Color.GRAY, Color.GREEN};
         barEntries.clear();
@@ -257,9 +253,9 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
         expensiveAmount = Integer.MAX_VALUE;
         profitableAmount = Integer.MIN_VALUE;
         SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.size(); i++) {
             int sum = 0;
-            String sql = "SELECT amount FROM operations WHERE category = '" + array[i] + "'" + " AND date " + sortDate;
+            String sql = "SELECT amount FROM operations JOIN categories ON operations.category_id = categories.id WHERE categories.name = '" + array.get(i) + "' AND date " + sortDate;
             Cursor cursor = db.rawQuery(sql, null);
             if (cursor.moveToFirst()) {
                 do {
@@ -270,18 +266,18 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
             //Получаем самую затратную и дешевую категорию
             if (sum < expensiveAmount) {
                 expensiveAmount = sum;
-                expensiveCategory = array[i];
+                expensiveCategory = array.get(i);
             }
             if (sum > profitableAmount) {
                 profitableAmount = sum;
-                profitableCategory = array[i];
+                profitableCategory = array.get(i);
             }
             //Добавляем все значения
             barEntries.add(new BarEntry(i, sum));
             if (sum == 0) {
                 continue;
             }
-            pieEntries.add(new PieEntry(sum, array[i]));
+            pieEntries.add(new PieEntry(sum, array.get(i)));
         }
         db.close();
         if (chartTypeFlag) {
@@ -294,6 +290,20 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
             pieDataSet.setColors(chartColorsArray);
             dataPie = new PieData(pieDataSet);
         }
+    }
+
+    @SuppressLint("Range")
+    void getCategories() {
+        SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
+        String sql = "SELECT name FROM categories WHERE type = '" + type + "'";
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            do {
+                categories.add(cursor.getString(cursor.getColumnIndex("name")));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
     }
 
     public void makeDates() {
@@ -445,7 +455,7 @@ public class ExpensesIncomeChartFragment extends Fragment implements OnChangeDat
             barChart.clear();
             barChart.setData(data);
             XAxis xAxis = barChart.getXAxis();
-            xAxis.setValueFormatter(new IndexAxisValueFormatter(categoriesText));
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(categories));
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
             xAxis.setGranularity(1);

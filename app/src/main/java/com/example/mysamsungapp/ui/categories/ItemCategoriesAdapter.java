@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.mysamsungapp.R;
@@ -31,7 +30,6 @@ public class ItemCategoriesAdapter extends ArrayAdapter<ItemCategories> {
         super(context, R.layout.categories_custom_item, items);
         this.fm = fm;
         this.type = type;
-        Log.i("TYPE", String.valueOf(type));
         this.imagesExpenses = imagesExpenses;
         this.imagesIncomes = imagesIncomes;
     }

@@ -1,8 +1,6 @@
 package com.example.mysamsungapp.ui.categories;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,14 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.mysamsungapp.DBHelper;
@@ -64,7 +58,7 @@ public class ActionCategoriesFragment extends Fragment implements OnActionCatego
 
         //Изображения для категорий
         int[] imagesExpenses = new int[]{R.drawable.products, R.drawable.food, R.drawable.education, R.drawable.family, R.drawable.sport, R.drawable.airplane,
-                R.drawable.metro, R.drawable.gas_station, R.drawable.ship, R.drawable.wine, R.drawable.other};
+                R.drawable.metro, R.drawable.gas_station, R.drawable.ship, R.drawable.wine, R.drawable.taxi, R.drawable.other};
         int[] imagesIncomes = new int[]{R.drawable.gift, R.drawable.salary, R.drawable.percent, R.drawable.other};
 
         //Формируем список всех категорий

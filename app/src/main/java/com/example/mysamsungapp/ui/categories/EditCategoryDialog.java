@@ -8,12 +8,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -24,14 +24,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.mysamsungapp.DBHelper;
 import com.example.mysamsungapp.R;
-import com.example.mysamsungapp.ui.SpinnerAdapter;
-import com.example.mysamsungapp.ui.home.OperationsInfoActivity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class EditCategoryDialog extends DialogFragment implements View.OnClickListener {
     ConstraintLayout imagesContainer;
@@ -110,8 +104,25 @@ public class EditCategoryDialog extends DialogFragment implements View.OnClickLi
         editName.setText(name);
 
         OkButton.setOnClickListener(v2 -> {
-            if (editName.length() == 0) {
-                editName.setError("Введите название");
+            SQLiteDatabase dbCheck = new DBHelper(getContext()).getReadableDatabase();
+            String sql = "SELECT name FROM categories WHERE type = '" + type + "'";
+            Cursor cursor = dbCheck.rawQuery(sql, null);
+            ArrayList<String> names = new ArrayList<>();
+            if (cursor.moveToNext()) {
+                do {
+                    names.add(cursor.getString(cursor.getColumnIndex("name")));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            dbCheck.close();
+            names.remove(name);
+            if (editName.length() == 0 || names.contains(editName.getText().toString())) {
+                if (editName.length() == 0) {
+                    editName.setError("Введите название");
+                }
+                if (names.contains(editName.getText().toString())) {
+                    editName.setError("Такая категория уже есть");
+                }
             } else {
                 SQLiteDatabase db = new DBHelper(getContext()).getWritableDatabase();
                 ContentValues values = new ContentValues();

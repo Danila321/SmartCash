@@ -139,7 +139,7 @@ public class GeneralChartFragment extends Fragment {
         ArrayList<BarEntry> lossData = new ArrayList<>();
         SQLiteDatabase db = new DBHelper(getActivity()).getReadableDatabase();
         String sql = "SELECT MIN(date) as date FROM operations";
-        @SuppressLint("Recycle") Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
             @SuppressLint("SimpleDateFormat") SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
             @SuppressLint("SimpleDateFormat") SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
