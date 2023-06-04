@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/pin_code_logo_imageview"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@android:drawable/sym_def_app_icon"
+        tools:visibility="visible" />
+
+    <com.github.omadahealth.typefaceview.TypefaceTextView
+        android:id="@+id/pin_code_step_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pin_code_logo_imageview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pin_code_logo_imageview" />
+
+    <com.github.omadahealth.lollipin.lib.views.PinCodeRoundView
+        android:id="@+id/pin_code_round_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pin_code_step_textview"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <com.github.omadahealth.typefaceview.TypefaceTextView
+        android:id="@+id/pin_code_forgot_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pin_code_round_view"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="24dp"
+        android:maxLines="1"
+        android:textColor="@color/dark_grey_color"
+        android:textSize="@dimen/pin_code_forgot_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pin_code_round_view"
+        tools:text="@string/pin_code_forgot_text" />
+
+    <com.github.omadahealth.lollipin.lib.views.KeyboardView
+        android:id="@+id/pin_code_keyboard_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pin_code_fingerprint_imageview"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pin_code_forgot_textview" />
+
+    <ImageView
+        android:id="@+id/pin_code_fingerprint_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pin_code_fingerprint_textview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_fp_40px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.github.omadahealth.typefaceview.TypefaceTextView
+        android:id="@+id/pin_code_fingerprint_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="10dp"
+        android:maxLines="1"
+        android:textColor="@color/dark_grey_color"
+        android:textSize="@dimen/pin_code_forgot_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/pin_code_fingerprint_imageview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/pin_code_fingerprint_text" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center"
+        android:text="Введите 4 цифры, которые хотите использовать для входа в приложение"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pin_code_step_textview" />
+</androidx.constraintlayout.widget.ConstraintLayout>

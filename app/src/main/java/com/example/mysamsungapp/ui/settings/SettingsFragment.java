@@ -1,6 +1,7 @@
 package com.example.mysamsungapp.ui.settings;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,8 +25,23 @@ public class SettingsFragment extends Fragment {
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        TextView pinSettings = root.findViewById(R.id.pinSetting);
+        ImageButton infoPin = root.findViewById(R.id.InfoImageViewPin);
         TextView delete = root.findViewById(R.id.deleteAllText);
         ImageButton infoDelete = root.findViewById(R.id.InfoImageView);
+
+        pinSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SettingPinActivity.class);
+            startActivity(intent);
+        });
+
+        infoPin.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Код-пароль");
+            builder.setMessage("Здесь вы сможете настроить вход по четырехзначному пин-коду");
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        });
 
         delete.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
