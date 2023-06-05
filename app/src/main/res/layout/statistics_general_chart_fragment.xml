@@ -21,28 +21,28 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipYearGeneral"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Годы" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipMonthGeneral"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Месяцы" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipWeekGeneral"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Недели" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipDayGeneral"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Дни" />

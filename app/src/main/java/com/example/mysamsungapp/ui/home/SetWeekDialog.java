@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
@@ -145,6 +146,10 @@ public class SetWeekDialog extends DialogFragment {
         while (WeekDate.getMonthValue() == selectedMonthNumber) {
             LocalDate startOfWeek = WeekDate.with(DayOfWeek.MONDAY);
             LocalDate endOfWeek = WeekDate.with(DayOfWeek.SUNDAY);
+            //Если конец недели выходит за дату конца месяца, то завершаем цикл
+            if (endOfWeek.isAfter(WeekDate.withDayOfMonth(WeekDate.lengthOfMonth()))) {
+                break;
+            }
             //Создаем TextView с датами недели
             TextView textView = new TextView(getContext());
             String week = startOfWeek.format(formatter) + "-" + endOfWeek.format(formatter);
@@ -159,6 +164,7 @@ public class SetWeekDialog extends DialogFragment {
             textView.setLayoutParams(params);
             //Устанавливаем слушатель для выбора недели
             Date startOfWeekDate = Date.from(startOfWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date endOfWeekDate = Date.from(endOfWeek.atStartOfDay(ZoneId.systemDefault()).toInstant());
             if (new Date().before(startOfWeekDate)) {
                 textView.setTextColor(Color.LTGRAY);
             } else {
@@ -172,12 +178,20 @@ public class SetWeekDialog extends DialogFragment {
                     date = selectedWeek + ", " + selectedYear;
                     finalDate.setText(date);
                 });
-                //Выбираем первую неделю по умолчанию
-                if (flag) {
-                    selectedTextView = textView;
-                    selectedTextView.setBackgroundResource(R.drawable.custom_week_text);
-                    selectedWeek = textView.getTag().toString();
-                    flag = false;
+                //Если выбран текущий год и месяц то выбирем текущую неделю, а иначе первую
+                if (selectedYear == Calendar.getInstance().get(Calendar.YEAR) && selectedMonthNumber == Calendar.getInstance().get(Calendar.MONTH) + 1) {
+                    if (new Date().before(endOfWeekDate) && new Date().after(startOfWeekDate)) {
+                        selectedTextView = textView;
+                        selectedTextView.setBackgroundResource(R.drawable.custom_week_text);
+                        selectedWeek = textView.getTag().toString();
+                    }
+                } else {
+                    if (flag) {
+                        selectedTextView = textView;
+                        selectedTextView.setBackgroundResource(R.drawable.custom_week_text);
+                        selectedWeek = textView.getTag().toString();
+                        flag = false;
+                    }
                 }
             }
             //Отображаем полученный TextView
