@@ -115,17 +115,17 @@ public class SetMonthDialog extends DialogFragment {
     void checkMonths(ChipGroup chipGroup) {
         for (int i = 0; i < 12; i++) {
             Chip chip = (Chip) chipGroup.getChildAt(i);
+            chip.setAlpha(1f);
             if (selectedYear == Calendar.getInstance().get(Calendar.YEAR)) {
                 if (i == Calendar.getInstance().get(Calendar.MONTH)) {
                     chip.setChecked(true);
                 }
                 if (i > Calendar.getInstance().get(Calendar.MONTH)) {
-                    chip.setTextColor(getResources().getColor(R.color.chip_gray, null));
+                    chip.setAlpha(0.45f);
                     chip.setCheckable(false);
                 }
             } else {
                 chip.setCheckable(true);
-                chip.setTextColor(getResources().getColor(R.color.black, null));
             }
         }
     }

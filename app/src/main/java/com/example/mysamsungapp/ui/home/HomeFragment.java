@@ -35,11 +35,6 @@ public class HomeFragment extends Fragment implements OnAddOperation, OnDeleteOr
     private FragmentHomeBinding binding;
     TextView balanceView;
 
-    /*String[] expensesCategories = {"Продукты", "Спорт", "Транспорт", "Образование", "Семья", "Еда", "Прочее"};
-    String[] incomeCategories = {"Зарплата", "Подарок", "% по вкладу", "Другое"};
-    int[] expensesImages = {R.drawable.products, R.drawable.sport, R.drawable.transport, R.drawable.education, R.drawable.family, R.drawable.food, R.drawable.other};
-    int[] incomeImages = {R.drawable.salary, R.drawable.gift, R.drawable.percent, R.drawable.other};*/
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

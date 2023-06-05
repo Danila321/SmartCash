@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
     <color name="holo_blue_dark">@android:color/holo_blue_dark</color>
-    <color name="chip_gray">@android:color/darker_gray</color>
     <color name="green_text">#66BB6A</color>
+    <color name="whiteAlpha">#25FFFFFF</color>
+    <color name="chipNotChecked">#DFDFDF</color>
 </resources>

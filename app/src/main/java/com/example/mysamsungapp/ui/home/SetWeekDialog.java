@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
@@ -82,7 +81,7 @@ public class SetWeekDialog extends DialogFragment {
         finalDate.setText(date);
 
         //Проматываем scrollView до сегодняшнего месяца
-        int scrollTo = (chipGroup.indexOfChild(dialogView.findViewById(chipGroup.getCheckedChipId())) + 1) * 130;
+        int scrollTo = (chipGroup.indexOfChild(dialogView.findViewById(chipGroup.getCheckedChipId())) + 1) * 143;
         scrollView.post(() -> scrollView.smoothScrollTo(scrollTo, 0));
 
         arrowRight.setVisibility(View.INVISIBLE);
@@ -190,17 +189,17 @@ public class SetWeekDialog extends DialogFragment {
     void checkMonths() {
         for (int i = 0; i < 12; i++) {
             Chip chip = (Chip) chipGroup.getChildAt(i);
+            chip.setAlpha(1f);
             if (selectedYear == Calendar.getInstance().get(Calendar.YEAR)) {
                 if (i == Calendar.getInstance().get(Calendar.MONTH)) {
                     chip.setChecked(true);
                 }
                 if (i > Calendar.getInstance().get(Calendar.MONTH)) {
-                    chip.setTextColor(getResources().getColor(R.color.chip_gray, null));
+                    chip.setAlpha(0.45f);
                     chip.setCheckable(false);
                 }
             } else {
                 chip.setCheckable(true);
-                chip.setTextColor(getResources().getColor(R.color.black, null));
             }
         }
     }
